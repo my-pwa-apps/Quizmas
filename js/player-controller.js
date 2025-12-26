@@ -5,6 +5,7 @@
 
 import gameController from './game-controller.js';
 import themeManager from './theme-manager.js';
+import soundManager from './sound-manager.js';
 
 class PlayerController {
     constructor() {
@@ -34,20 +35,25 @@ class PlayerController {
     }
 
     initSounds() {
-        this.sounds = {
-            correct: document.getElementById('sound-correct'),
-            wrong: document.getElementById('sound-wrong'),
-            tick: document.getElementById('sound-tick'),
-            countdown: document.getElementById('sound-countdown'),
-            winner: document.getElementById('sound-winner')
-        };
+        // Sound manager handles procedural audio generation
+        // Initialize on first user interaction
+        document.addEventListener('click', () => soundManager.init(), { once: true });
+        document.addEventListener('touchstart', () => soundManager.init(), { once: true });
     }
 
     playSound(name) {
-        const sound = this.sounds[name];
-        if (sound) {
-            sound.currentTime = 0;
-            sound.play().catch(() => {});
+        const soundMap = {
+            'correct': () => soundManager.playCorrect(),
+            'wrong': () => soundManager.playWrong(),
+            'tick': () => soundManager.playTick(),
+            'countdown': () => soundManager.playCountdown(),
+            'winner': () => soundManager.playWinner(),
+            'click': () => soundManager.playClick(),
+            'streak': () => soundManager.playStreak()
+        };
+        
+        if (soundMap[name]) {
+            soundMap[name]();
         }
     }
 

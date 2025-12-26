@@ -6,6 +6,7 @@
 import gameController from './game-controller.js';
 import firebaseService from './firebase-service.js';
 import themeManager from './theme-manager.js';
+import soundManager from './sound-manager.js';
 
 class HostController {
     constructor() {
@@ -34,21 +35,25 @@ class HostController {
     }
 
     initSounds() {
-        this.sounds = {
-            join: document.getElementById('sound-join'),
-            countdown: document.getElementById('sound-countdown'),
-            timesUp: document.getElementById('sound-times-up'),
-            reveal: document.getElementById('sound-reveal'),
-            winner: document.getElementById('sound-winner'),
-            bgMusic: document.getElementById('bg-music')
-        };
+        // Sound manager handles procedural audio generation
+        // Initialize on first user interaction
+        document.addEventListener('click', () => soundManager.init(), { once: true });
+        document.addEventListener('touchstart', () => soundManager.init(), { once: true });
     }
 
     playSound(name) {
-        const sound = this.sounds[name];
-        if (sound) {
-            sound.currentTime = 0;
-            sound.play().catch(() => {}); // Ignore autoplay errors
+        const soundMap = {
+            'join': () => soundManager.playJoin(),
+            'countdown': () => soundManager.playCountdown(),
+            'timesUp': () => soundManager.playTimesUp(),
+            'reveal': () => soundManager.playReveal(),
+            'winner': () => soundManager.playWinner(),
+            'question': () => soundManager.playQuestion(),
+            'gameStart': () => soundManager.playGameStart()
+        };
+        
+        if (soundMap[name]) {
+            soundMap[name]();
         }
     }
 
