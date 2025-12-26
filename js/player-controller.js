@@ -232,6 +232,7 @@ class PlayerController {
         if (!question) return;
 
         this.hasAnswered = false;
+        const questionType = question.questionType || 'quiz';
 
         // Hide feedback
         document.getElementById('answer-feedback').classList.add('hidden');
@@ -242,7 +243,31 @@ class PlayerController {
             <div class="player-question-text">${this.escapeHtml(question.text)}</div>
         `;
 
-        // Create answer buttons
+        // Hide all input types
+        document.querySelectorAll('[class*="player-input-"]').forEach(el => el.style.display = 'none');
+
+        // Show appropriate input based on question type
+        if (questionType === 'quiz') {
+            this.setupQuizInput(question);
+        } else if (questionType === 'truefalse') {
+            this.setupTrueFalseInput();
+        } else if (questionType === 'type') {
+            this.setupTypeInput();
+        } else if (questionType === 'slider') {
+            this.setupSliderInput(question);
+        } else if (questionType === 'order') {
+            this.setupOrderInput(question);
+        }
+
+        // Show screen
+        this.showScreen('player-game');
+
+        // Start timer display
+        const duration = question.timeLimit || gameController.currentGame.settings.timePerQuestion;
+        this.startTimer(duration);
+    }
+
+    setupQuizInput(question) {
         const shapes = gameController.getAnswerShapes();
         const colors = gameController.getAnswerColors();
         const buttonsContainer = document.getElementById('answer-buttons');
@@ -254,17 +279,136 @@ class PlayerController {
             </button>
         `).join('');
 
-        // Add click handlers
         buttonsContainer.querySelectorAll('.answer-btn').forEach(btn => {
             btn.addEventListener('click', () => this.submitAnswer(parseInt(btn.dataset.index)));
         });
+        buttonsContainer.style.display = 'grid';
+    }
 
-        // Show screen
-        this.showScreen('player-game');
+    setupTrueFalseInput() {
+        const tfContainer = document.getElementById('tf-buttons');
+        tfContainer.style.display = 'grid';
 
-        // Start timer display
-        const duration = question.timeLimit || gameController.currentGame.settings.timePerQuestion;
-        this.startTimer(duration);
+        document.getElementById('btn-true').onclick = () => this.submitAnswer(true);
+        document.getElementById('btn-false').onclick = () => this.submitAnswer(false);
+    }
+
+    setupTypeInput() {
+        const typeContainer = document.getElementById('type-input');
+        typeContainer.style.display = 'flex';
+
+        const input = document.getElementById('type-answer-input');
+        const submitBtn = document.getElementById('btn-submit-answer');
+        
+        input.value = '';
+        input.focus();
+        
+        submitBtn.onclick = () => {
+            const answer = input.value.trim();
+            if (answer) {
+                this.submitAnswer(answer);
+            }
+        };
+        
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        };
+    }
+
+    setupSliderInput(question) {
+        const sliderContainer = document.getElementById('slider-input');
+        sliderContainer.style.display = 'flex';
+
+        const slider = document.getElementById('slider-answer-input');
+        const currentValue = document.getElementById('slider-current');
+        const minLabel = document.getElementById('player-slider-min');
+        const maxLabel = document.getElementById('player-slider-max');
+        const submitBtn = document.getElementById('btn-submit-slider');
+
+        const min = question.sliderMin || 0;
+        const max = question.sliderMax || 100;
+        const mid = Math.round((min + max) / 2);
+
+        slider.min = min;
+        slider.max = max;
+        slider.value = mid;
+        currentValue.textContent = mid;
+        minLabel.textContent = min;
+        maxLabel.textContent = max;
+
+        slider.oninput = () => {
+            currentValue.textContent = slider.value;
+        };
+
+        submitBtn.onclick = () => {
+            this.submitAnswer(parseInt(slider.value));
+        };
+    }
+
+    setupOrderInput(question) {
+        const orderContainer = document.getElementById('order-input');
+        orderContainer.style.display = 'flex';
+
+        const sortableList = document.getElementById('order-sortable');
+        const submitBtn = document.getElementById('btn-submit-order');
+        
+        // Shuffle items
+        const items = [...(question.orderItems || [])].sort(() => Math.random() - 0.5);
+        
+        sortableList.innerHTML = items.map((item, index) => `
+            <div class="order-sortable-item" data-value="${this.escapeHtml(item)}" draggable="true">
+                <span class="drag-handle">☰</span>
+                <span class="order-num">${index + 1}</span>
+                <span class="order-text">${this.escapeHtml(item)}</span>
+            </div>
+        `).join('');
+
+        // Simple drag and drop
+        this.initSortable(sortableList);
+
+        submitBtn.onclick = () => {
+            const orderedItems = Array.from(sortableList.querySelectorAll('.order-sortable-item'))
+                .map(el => el.dataset.value);
+            this.submitAnswer(orderedItems);
+        };
+    }
+
+    initSortable(list) {
+        let draggedItem = null;
+
+        list.querySelectorAll('.order-sortable-item').forEach(item => {
+            item.addEventListener('dragstart', () => {
+                draggedItem = item;
+                item.classList.add('dragging');
+            });
+
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                draggedItem = null;
+                this.updateOrderNumbers(list);
+            });
+
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (draggedItem && draggedItem !== item) {
+                    const rect = item.getBoundingClientRect();
+                    const midY = rect.top + rect.height / 2;
+                    if (e.clientY < midY) {
+                        list.insertBefore(draggedItem, item);
+                    } else {
+                        list.insertBefore(draggedItem, item.nextSibling);
+                    }
+                }
+            });
+        });
+    }
+
+    updateOrderNumbers(list) {
+        list.querySelectorAll('.order-sortable-item').forEach((item, index) => {
+            item.querySelector('.order-num').textContent = index + 1;
+        });
     }
 
     startTimer(duration) {
@@ -292,23 +436,46 @@ class PlayerController {
         );
     }
 
-    async submitAnswer(answerIndex) {
+    async submitAnswer(answerValue) {
         if (this.hasAnswered) return;
         this.hasAnswered = true;
 
-        // Disable all buttons
-        document.querySelectorAll('.answer-btn').forEach(btn => {
-            btn.disabled = true;
-            if (parseInt(btn.dataset.index) === answerIndex) {
-                btn.classList.add('selected');
-            }
-        });
+        const question = gameController.getCurrentQuestion();
+        const questionType = question?.questionType || 'quiz';
+
+        // Disable all input elements
+        if (questionType === 'quiz') {
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.disabled = true;
+                if (parseInt(btn.dataset.index) === answerValue) {
+                    btn.classList.add('selected');
+                }
+            });
+        } else if (questionType === 'truefalse') {
+            document.querySelectorAll('.tf-answer-btn').forEach(btn => {
+                btn.disabled = true;
+                if ((btn.dataset.answer === 'true') === answerValue) {
+                    btn.classList.add('selected');
+                }
+            });
+        } else if (questionType === 'type') {
+            document.getElementById('type-answer-input').disabled = true;
+            document.getElementById('btn-submit-answer').disabled = true;
+        } else if (questionType === 'slider') {
+            document.getElementById('slider-answer-input').disabled = true;
+            document.getElementById('btn-submit-slider').disabled = true;
+        } else if (questionType === 'order') {
+            document.querySelectorAll('.order-sortable-item').forEach(item => {
+                item.setAttribute('draggable', 'false');
+            });
+            document.getElementById('btn-submit-order').disabled = true;
+        }
 
         try {
-            const result = await gameController.submitAnswer(answerIndex);
+            const result = await gameController.submitAnswer(answerValue);
             this.showFeedback(result.isCorrect, result.points);
         } catch (error) {
-            console.error('Failed to submit answer:', error);
+            console.error('Kon antwoord niet versturen:', error);
         }
     }
 
@@ -318,24 +485,24 @@ class PlayerController {
         if (timeout) {
             feedback.innerHTML = `
                 <div class="feedback-icon">⏰</div>
-                <div class="feedback-text">Time's Up!</div>
-                <div class="feedback-points">No points</div>
+                <div class="feedback-text">Tijd is op!</div>
+                <div class="feedback-points">Geen punten</div>
             `;
             feedback.className = 'feedback-overlay feedback-wrong';
         } else if (isCorrect) {
             this.playSound('correct');
             feedback.innerHTML = `
                 <div class="feedback-icon">✓</div>
-                <div class="feedback-text feedback-correct">Correct!</div>
-                <div class="feedback-points">+${points} points</div>
+                <div class="feedback-text feedback-correct">Goed!</div>
+                <div class="feedback-points">+${points} punten</div>
             `;
             feedback.className = 'feedback-overlay feedback-correct';
         } else {
             this.playSound('wrong');
             feedback.innerHTML = `
                 <div class="feedback-icon">✗</div>
-                <div class="feedback-text feedback-wrong">Wrong!</div>
-                <div class="feedback-points">No points</div>
+                <div class="feedback-text feedback-wrong">Fout!</div>
+                <div class="feedback-points">Geen punten</div>
             `;
             feedback.className = 'feedback-overlay feedback-wrong';
         }
@@ -363,9 +530,9 @@ class PlayerController {
         }
 
         // Update title based on position
-        const titles = ['🏆 Champion!', '🥈 Amazing!', '🥉 Great Job!'];
+        const titles = ['🏆 Kampioen!', '🥈 Geweldig!', '🥉 Goed gedaan!'];
         document.getElementById('results-title').textContent = 
-            position <= 3 ? titles[position - 1] : 'Game Over!';
+            position <= 3 ? titles[position - 1] : 'Spel Afgelopen!';
 
         this.showScreen('player-results');
     }

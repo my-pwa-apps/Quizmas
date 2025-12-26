@@ -22,8 +22,8 @@
                 
                 <div class="setup-options">
                     <div class="option-group">
-                        <label>Selecteer Quiz</label>
-                        <select id="quiz-select" class="select-large">
+                        <label for="quiz-select">Selecteer Quiz</label>
+                        <select id="quiz-select" class="select-large" title="Selecteer een quiz">
                             <option value="">Quizzen laden...</option>
                         </select>
                     </div>
@@ -38,8 +38,8 @@
                     </div>
                     
                     <div class="option-group">
-                        <label>Tijd per Vraag</label>
-                        <select id="time-select" class="select-large">
+                        <label for="time-select">Tijd per Vraag</label>
+                        <select id="time-select" class="select-large" title="Tijd per vraag">
                             <option value="10">10 seconden</option>
                             <option value="15">15 seconden</option>
                             <option value="20" selected>20 seconden</option>
@@ -108,8 +108,62 @@
                 
                 <h2 id="question-text" class="question-text">Vraag komt hier?</h2>
                 
-                <div id="host-answers" class="answers-display">
+                <!-- Standard Quiz Answers -->
+                <div id="host-answers" class="answers-display question-type-quiz">
                     <!-- Answer options will be shown here -->
+                </div>
+                
+                <!-- True/False Display -->
+                <div id="host-truefalse" class="answers-display question-type-truefalse">
+                    <div class="tf-options">
+                        <div class="tf-option tf-true">
+                            <span class="tf-icon">✓</span>
+                            <span class="tf-label">Waar</span>
+                        </div>
+                        <div class="tf-option tf-false">
+                            <span class="tf-icon">✗</span>
+                            <span class="tf-label">Niet Waar</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Type Answer Display -->
+                <div id="host-type" class="answers-display question-type-type">
+                    <div class="type-hint">
+                        <span class="type-icon">⌨️</span>
+                        <span class="type-label">Spelers typen hun antwoord...</span>
+                    </div>
+                    <div id="type-expected" class="type-expected">
+                        <!-- Expected answer shown after reveal -->
+                    </div>
+                </div>
+                
+                <!-- Slider Display -->
+                <div id="host-slider" class="answers-display question-type-slider">
+                    <div class="slider-display">
+                        <div class="slider-range">
+                            <span id="slider-min" class="slider-value">0</span>
+                            <div class="slider-track">
+                                <div id="slider-indicator" class="slider-indicator"></div>
+                            </div>
+                            <span id="slider-max" class="slider-value">100</span>
+                        </div>
+                        <div class="slider-hint">
+                            <span class="slider-icon">🎚️</span>
+                            <span class="slider-label">Spelers kiezen een getal...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Display -->
+                <div id="host-order" class="answers-display question-type-order">
+                    <div class="order-items-display" id="order-items-display">
+                        <!-- Order items will be shown here -->
+                    </div>
+                    <div class="order-hint">
+                        <span class="order-icon">↕️</span>
+                        <span class="order-label">Spelers zetten in de juiste volgorde...</span>
+                    </div>
                 </div>
                 
                 <div class="answer-stats">
@@ -122,9 +176,72 @@
         <div id="host-reveal" class="screen">
             <div class="reveal-container">
                 <h2 id="reveal-question">Vraagtekst hier</h2>
-                <div id="reveal-answers" class="answers-reveal">
+                
+                <!-- Standard Quiz Reveal -->
+                <div id="reveal-answers" class="answers-reveal reveal-type-quiz">
                     <!-- Answers with correct highlighted -->
                 </div>
+                
+                <!-- True/False Reveal -->
+                <div id="reveal-truefalse" class="answers-reveal reveal-type-truefalse">
+                    <div class="tf-reveal">
+                        <div class="tf-option" id="reveal-tf-true">
+                            <span class="tf-icon">✓</span>
+                            <span class="tf-label">Waar</span>
+                            <span class="tf-count" id="reveal-true-count">0</span>
+                        </div>
+                        <div class="tf-option" id="reveal-tf-false">
+                            <span class="tf-icon">✗</span>
+                            <span class="tf-label">Niet Waar</span>
+                            <span class="tf-count" id="reveal-false-count">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Type Answer Reveal -->
+                <div id="reveal-type" class="answers-reveal reveal-type-type">
+                    <div class="type-reveal">
+                        <div class="correct-answer-box">
+                            <span class="correct-label">Juiste antwoord:</span>
+                            <span class="correct-answer" id="reveal-correct-answer">---</span>
+                        </div>
+                        <div class="player-answers-list" id="player-answers-list">
+                            <!-- Player answers will be shown here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slider Reveal -->
+                <div id="reveal-slider" class="answers-reveal reveal-type-slider">
+                    <div class="slider-reveal">
+                        <div class="slider-answer-display">
+                            <span class="correct-label">Juiste antwoord:</span>
+                            <span class="correct-answer" id="reveal-slider-answer">50</span>
+                        </div>
+                        <div class="slider-range-display">
+                            <span id="reveal-slider-min">0</span>
+                            <div class="slider-track-reveal">
+                                <div class="slider-correct-zone" id="reveal-tolerance-zone"></div>
+                                <div class="slider-correct-marker" id="reveal-correct-marker"></div>
+                                <div class="player-guesses" id="player-guesses">
+                                    <!-- Player guess markers -->
+                                </div>
+                            </div>
+                            <span id="reveal-slider-max">100</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Reveal -->
+                <div id="reveal-order" class="answers-reveal reveal-type-order">
+                    <div class="order-reveal">
+                        <div class="correct-order-label">Juiste volgorde:</div>
+                        <div class="correct-order-list" id="reveal-correct-order">
+                            <!-- Correct order items -->
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="stats-bar">
                     <div class="stat">
                         <span class="stat-value" id="correct-count">0</span>

@@ -257,6 +257,28 @@ class AdminController {
             this.closeQuestionModal();
         });
 
+        // Question type selector
+        document.querySelectorAll('.qtype-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.qtype-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.switchQuestionType(btn.dataset.type);
+            });
+        });
+
+        // True/False button handlers
+        document.querySelectorAll('.tf-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Order items - add/remove
+        document.getElementById('btn-add-order-item')?.addEventListener('click', () => {
+            this.addOrderItem();
+        });
+
         // Media type selector
         document.querySelectorAll('.media-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -276,6 +298,51 @@ class AdminController {
         document.getElementById('filter-category').addEventListener('change', () => this.filterQuestions());
         document.getElementById('filter-type').addEventListener('change', () => this.filterQuestions());
         document.getElementById('search-questions').addEventListener('input', () => this.filterQuestions());
+    }
+
+    switchQuestionType(type) {
+        // Hide all answer editors
+        document.querySelectorAll('.answer-editor').forEach(editor => {
+            editor.style.display = 'none';
+        });
+        
+        // Show the selected type's editor
+        const editorId = {
+            'quiz': 'quiz-answers',
+            'truefalse': 'truefalse-answer',
+            'type': 'type-answer',
+            'slider': 'slider-answer',
+            'order': 'order-answer'
+        }[type];
+        
+        const editor = document.getElementById(editorId);
+        if (editor) {
+            editor.style.display = 'block';
+        }
+    }
+
+    addOrderItem() {
+        const list = document.getElementById('order-items-list');
+        if (!list) return;
+        
+        const count = list.querySelectorAll('.order-item').length + 1;
+        const item = document.createElement('div');
+        item.className = 'order-item';
+        item.innerHTML = `
+            <span class="order-num">${count}</span>
+            <input type="text" class="order-item-input" placeholder="Item ${count}...">
+            <button type="button" class="btn-remove-order" onclick="this.parentElement.remove()">×</button>
+        `;
+        list.appendChild(item);
+    }
+
+    removeOrderItem(button) {
+        button.parentElement.remove();
+        // Renumber items
+        const list = document.getElementById('order-items-list');
+        list.querySelectorAll('.order-item').forEach((item, index) => {
+            item.querySelector('.order-num').textContent = index + 1;
+        });
     }
 
     renderQuestions() {
@@ -364,7 +431,7 @@ class AdminController {
     openQuestionModal(question = null) {
         this.editingQuestionId = question ? question.id : null;
         
-        document.getElementById('modal-title').textContent = question ? 'Edit Question' : 'New Question';
+        document.getElementById('modal-title').textContent = question ? 'Vraag Bewerken' : 'Nieuwe Vraag';
         
         // Reset form
         document.getElementById('q-category').value = question?.category || '';
@@ -373,6 +440,13 @@ class AdminController {
         document.getElementById('q-explanation').value = question?.explanation || '';
         document.getElementById('q-time').value = question?.timeLimit || 20;
 
+        // Question type
+        const questionType = question?.questionType || 'quiz';
+        document.querySelectorAll('.qtype-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.type === questionType);
+        });
+        this.switchQuestionType(questionType);
+
         // Media
         document.querySelectorAll('.media-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.type === (question?.mediaType || 'none'));
@@ -380,15 +454,52 @@ class AdminController {
         document.getElementById('q-media-url').value = question?.mediaUrl || '';
         document.getElementById('media-input-container').classList.toggle('hidden', !question?.mediaType || question.mediaType === 'none');
 
-        // Answers
+        // Quiz answers
         const answers = question?.answers || ['', '', '', ''];
         for (let i = 0; i < 4; i++) {
-            document.getElementById(`q-answer-${i}`).value = answers[i] || '';
+            const input = document.getElementById(`q-answer-${i}`);
+            if (input) input.value = answers[i] || '';
         }
-
-        // Correct answer
         const correctIndex = question?.correctIndex || 0;
-        document.querySelector(`input[name="correct"][value="${correctIndex}"]`).checked = true;
+        const correctRadio = document.querySelector(`input[name="correct"][value="${correctIndex}"]`);
+        if (correctRadio) correctRadio.checked = true;
+
+        // True/False answer
+        const tfAnswer = question?.correctAnswer === true || question?.correctAnswer === 'true';
+        document.querySelectorAll('.tf-btn').forEach(btn => {
+            btn.classList.toggle('active', (btn.dataset.value === 'true') === tfAnswer);
+        });
+
+        // Type answer
+        const typeInput = document.getElementById('q-type-correct');
+        if (typeInput) typeInput.value = question?.correctAnswer || '';
+
+        // Slider settings
+        const sliderMin = document.getElementById('slider-min');
+        const sliderMax = document.getElementById('slider-max');
+        const sliderCorrect = document.getElementById('slider-correct');
+        const sliderTolerance = document.getElementById('slider-tolerance');
+        if (sliderMin) sliderMin.value = question?.sliderMin || 0;
+        if (sliderMax) sliderMax.value = question?.sliderMax || 100;
+        if (sliderCorrect) sliderCorrect.value = question?.correctAnswer || 50;
+        if (sliderTolerance) sliderTolerance.value = question?.tolerance || 5;
+
+        // Order items
+        const orderList = document.getElementById('order-items-list');
+        if (orderList) {
+            orderList.innerHTML = '';
+            const orderItems = question?.orderItems || ['', '', ''];
+            orderItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'order-item';
+                div.innerHTML = `
+                    <span class="order-num">${index + 1}</span>
+                    <input type="text" class="order-item-input" placeholder="Item ${index + 1}..." value="${this.escapeHtml(item)}">
+                    <button type="button" class="btn-remove-order" onclick="this.parentElement.remove()">×</button>
+                `;
+                orderList.appendChild(div);
+            });
+        }
 
         document.getElementById('question-modal').classList.add('active');
     }
@@ -418,37 +529,68 @@ class AdminController {
     }
 
     async saveQuestion() {
+        const questionType = document.querySelector('.qtype-btn.active')?.dataset.type || 'quiz';
+        
         const questionData = {
+            questionType: questionType,
             category: document.getElementById('q-category').value,
             difficulty: document.getElementById('q-difficulty').value,
             text: document.getElementById('q-text').value.trim(),
             explanation: document.getElementById('q-explanation').value.trim(),
             timeLimit: parseInt(document.getElementById('q-time').value) || 20,
-            mediaType: document.querySelector('.media-btn.active').dataset.type,
-            mediaUrl: document.getElementById('q-media-url').value.trim(),
-            answers: [
-                document.getElementById('q-answer-0').value.trim(),
-                document.getElementById('q-answer-1').value.trim(),
-                document.getElementById('q-answer-2').value.trim(),
-                document.getElementById('q-answer-3').value.trim()
-            ].filter(a => a), // Remove empty answers
-            correctIndex: parseInt(document.querySelector('input[name="correct"]:checked').value)
+            mediaType: document.querySelector('.media-btn.active')?.dataset.type || 'none',
+            mediaUrl: document.getElementById('q-media-url').value.trim()
         };
+
+        // Type-specific data
+        if (questionType === 'quiz') {
+            questionData.answers = [
+                document.getElementById('q-answer-0')?.value.trim(),
+                document.getElementById('q-answer-1')?.value.trim(),
+                document.getElementById('q-answer-2')?.value.trim(),
+                document.getElementById('q-answer-3')?.value.trim()
+            ].filter(a => a);
+            questionData.correctIndex = parseInt(document.querySelector('input[name="correct"]:checked')?.value || 0);
+        } else if (questionType === 'truefalse') {
+            const tfActive = document.querySelector('.tf-btn.active');
+            questionData.correctAnswer = tfActive?.dataset.value === 'true';
+        } else if (questionType === 'type') {
+            questionData.correctAnswer = document.getElementById('q-type-correct')?.value.trim() || '';
+        } else if (questionType === 'slider') {
+            questionData.sliderMin = parseInt(document.getElementById('slider-min')?.value) || 0;
+            questionData.sliderMax = parseInt(document.getElementById('slider-max')?.value) || 100;
+            questionData.correctAnswer = parseInt(document.getElementById('slider-correct')?.value) || 50;
+            questionData.tolerance = parseInt(document.getElementById('slider-tolerance')?.value) || 5;
+        } else if (questionType === 'order') {
+            const orderInputs = document.querySelectorAll('.order-item-input');
+            questionData.orderItems = Array.from(orderInputs).map(input => input.value.trim()).filter(v => v);
+        }
 
         // Validation
         if (!questionData.text) {
-            alert('Please enter a question');
+            alert('Voer een vraag in');
             return;
         }
 
-        if (questionData.answers.length < 2) {
-            alert('Please provide at least 2 answers');
-            return;
-        }
-
-        if (questionData.correctIndex >= questionData.answers.length) {
-            alert('Please select a valid correct answer');
-            return;
+        if (questionType === 'quiz') {
+            if (questionData.answers.length < 2) {
+                alert('Geef minimaal 2 antwoorden');
+                return;
+            }
+            if (questionData.correctIndex >= questionData.answers.length) {
+                alert('Selecteer een geldig correct antwoord');
+                return;
+            }
+        } else if (questionType === 'type') {
+            if (!questionData.correctAnswer) {
+                alert('Voer het juiste antwoord in');
+                return;
+            }
+        } else if (questionType === 'order') {
+            if (questionData.orderItems.length < 2) {
+                alert('Voeg minimaal 2 items toe voor volgorde');
+                return;
+            }
         }
 
         try {

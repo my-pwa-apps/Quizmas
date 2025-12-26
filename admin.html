@@ -69,10 +69,10 @@
                     <div class="tab-header">
                         <h2>Vragenbank</h2>
                         <div class="filter-bar">
-                            <select id="filter-category" class="select-medium">
+                            <select id="filter-category" class="select-medium" title="Filter op categorie">
                                 <option value="">Alle Categorieën</option>
                             </select>
-                            <select id="filter-type" class="select-medium">
+                            <select id="filter-type" class="select-medium" title="Filter op mediatype">
                                 <option value="">Alle Types</option>
                                 <option value="text">Alleen Tekst</option>
                                 <option value="image">Met Afbeelding</option>
@@ -107,8 +107,8 @@
                         
                         <div class="generate-form">
                             <div class="option-group">
-                                <label>Categorie</label>
-                                <select id="gen-category" class="select-large">
+                                <label for="gen-category">Categorie</label>
+                                <select id="gen-category" class="select-large" title="Selecteer categorie">
                                     <option value="general">Algemene Kennis</option>
                                     <option value="nederland">Nederland 🇳🇱</option>
                                     <option value="history">Geschiedenis</option>
@@ -127,8 +127,8 @@
                             </div>
                             
                             <div class="option-group">
-                                <label>Moeilijkheid</label>
-                                <select id="gen-difficulty" class="select-large">
+                                <label for="gen-difficulty">Moeilijkheid</label>
+                                <select id="gen-difficulty" class="select-large" title="Selecteer moeilijkheid">
                                     <option value="easy">Makkelijk</option>
                                     <option value="medium" selected>Gemiddeld</option>
                                     <option value="hard">Moeilijk</option>
@@ -137,8 +137,8 @@
                             </div>
                             
                             <div class="option-group">
-                                <label>Aantal Vragen</label>
-                                <input type="number" id="gen-count" value="10" min="1" max="50" class="input-medium">
+                                <label for="gen-count">Aantal Vragen</label>
+                                <input type="number" id="gen-count" value="10" min="1" max="50" class="input-medium" title="Aantal vragen om te genereren">
                             </div>
                             
                             <button id="btn-generate" class="btn btn-primary btn-large">
@@ -194,6 +194,38 @@
                     <button class="modal-close" id="close-question-modal">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <!-- Stap 1: Kies vraagtype -->
+                    <div class="question-type-selector">
+                        <label>Kies Vraagtype</label>
+                        <div class="question-types-grid">
+                            <button class="qtype-btn active" data-type="quiz">
+                                <span class="qtype-icon">🎯</span>
+                                <span class="qtype-name">Quiz</span>
+                                <span class="qtype-desc">Meerkeuze vraag</span>
+                            </button>
+                            <button class="qtype-btn" data-type="truefalse">
+                                <span class="qtype-icon">✓✗</span>
+                                <span class="qtype-name">Waar/Niet Waar</span>
+                                <span class="qtype-desc">Ja of nee vraag</span>
+                            </button>
+                            <button class="qtype-btn" data-type="type">
+                                <span class="qtype-icon">⌨️</span>
+                                <span class="qtype-name">Type Antwoord</span>
+                                <span class="qtype-desc">Typ het antwoord</span>
+                            </button>
+                            <button class="qtype-btn" data-type="slider">
+                                <span class="qtype-icon">🎚️</span>
+                                <span class="qtype-name">Slider</span>
+                                <span class="qtype-desc">Schat een getal</span>
+                            </button>
+                            <button class="qtype-btn" data-type="order">
+                                <span class="qtype-icon">📋</span>
+                                <span class="qtype-name">Volgorde</span>
+                                <span class="qtype-desc">Zet in de juiste volgorde</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="form-row">
                         <div class="input-group">
                             <label for="q-category">Categorie</label>
@@ -230,28 +262,115 @@
                         </div>
                     </div>
                     
-                    <div class="answers-editor">
+                    <!-- Quiz antwoorden (meerkeuze) -->
+                    <div id="answers-quiz" class="answers-editor">
                         <label>Antwoorden (markeer het juiste)</label>
                         <div class="answer-row">
-                            <input type="radio" name="correct" value="0" checked>
-                            <span class="answer-color" style="background: #e21b3c"></span>
+                            <input type="radio" name="correct" value="0" checked id="correct-0" title="Markeer als correct antwoord">
+                            <label for="correct-0" class="answer-color answer-color-red"></label>
                             <input type="text" class="answer-input" id="q-answer-0" placeholder="Antwoord 1">
                         </div>
                         <div class="answer-row">
-                            <input type="radio" name="correct" value="1">
-                            <span class="answer-color" style="background: #1368ce"></span>
+                            <input type="radio" name="correct" value="1" id="correct-1" title="Markeer als correct antwoord">
+                            <label for="correct-1" class="answer-color answer-color-blue"></label>
                             <input type="text" class="answer-input" id="q-answer-1" placeholder="Antwoord 2">
                         </div>
                         <div class="answer-row">
-                            <input type="radio" name="correct" value="2">
-                            <span class="answer-color" style="background: #d89e00"></span>
+                            <input type="radio" name="correct" value="2" id="correct-2" title="Markeer als correct antwoord">
+                            <label for="correct-2" class="answer-color answer-color-yellow"></label>
                             <input type="text" class="answer-input" id="q-answer-2" placeholder="Antwoord 3 (optioneel)">
                         </div>
                         <div class="answer-row">
-                            <input type="radio" name="correct" value="3">
-                            <span class="answer-color" style="background: #26890c"></span>
+                            <input type="radio" name="correct" value="3" id="correct-3" title="Markeer als correct antwoord">
+                            <label for="correct-3" class="answer-color answer-color-green"></label>
                             <input type="text" class="answer-input" id="q-answer-3" placeholder="Antwoord 4 (optioneel)">
                         </div>
+                    </div>
+
+                    <!-- Waar/Niet Waar antwoorden -->
+                    <div id="answers-truefalse" class="answers-editor hidden">
+                        <label>Wat is het juiste antwoord?</label>
+                        <div class="truefalse-buttons">
+                            <button class="tf-btn tf-true active" data-value="true">
+                                <span class="tf-icon">✓</span>
+                                <span>Waar</span>
+                            </button>
+                            <button class="tf-btn tf-false" data-value="false">
+                                <span class="tf-icon">✗</span>
+                                <span>Niet Waar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Type antwoord -->
+                    <div id="answers-type" class="answers-editor hidden">
+                        <label>Juiste antwoord(en)</label>
+                        <p class="hint">Voer alle mogelijke juiste antwoorden in, gescheiden door komma's. Bijvoorbeeld: "Amsterdam, amsterdam, A'dam"</p>
+                        <input type="text" id="q-type-answers" class="input-large" placeholder="Antwoord 1, Antwoord 2, ...">
+                        <div class="type-options">
+                            <label>
+                                <input type="checkbox" id="q-type-casesensitive">
+                                Hoofdlettergevoelig
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Slider antwoord -->
+                    <div id="answers-slider" class="answers-editor hidden">
+                        <label>Slider Instellingen</label>
+                        <div class="slider-settings">
+                            <div class="slider-row">
+                                <div class="input-group">
+                                    <label for="q-slider-min">Minimum</label>
+                                    <input type="number" id="q-slider-min" value="0" class="input-small">
+                                </div>
+                                <div class="input-group">
+                                    <label for="q-slider-max">Maximum</label>
+                                    <input type="number" id="q-slider-max" value="100" class="input-small">
+                                </div>
+                                <div class="input-group">
+                                    <label for="q-slider-step">Stap</label>
+                                    <input type="number" id="q-slider-step" value="1" min="1" class="input-small">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="q-slider-correct">Juiste antwoord</label>
+                                <input type="number" id="q-slider-correct" value="50" class="input-medium">
+                            </div>
+                            <div class="input-group">
+                                <label for="q-slider-tolerance">Tolerantie (± waarde voor gedeeltelijke punten)</label>
+                                <input type="number" id="q-slider-tolerance" value="5" min="0" class="input-small">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Volgorde antwoorden -->
+                    <div id="answers-order" class="answers-editor hidden">
+                        <label>Items in de juiste volgorde</label>
+                        <p class="hint">Voer de items in de JUISTE volgorde in. Ze worden door elkaar gehusseld voor de spelers.</p>
+                        <div id="order-items-list">
+                            <div class="order-item">
+                                <span class="order-num">1</span>
+                                <input type="text" class="order-input" placeholder="Eerste item">
+                                <button class="btn-remove-item" title="Verwijder">✕</button>
+                            </div>
+                            <div class="order-item">
+                                <span class="order-num">2</span>
+                                <input type="text" class="order-input" placeholder="Tweede item">
+                                <button class="btn-remove-item" title="Verwijder">✕</button>
+                            </div>
+                            <div class="order-item">
+                                <span class="order-num">3</span>
+                                <input type="text" class="order-input" placeholder="Derde item">
+                                <button class="btn-remove-item" title="Verwijder">✕</button>
+                            </div>
+                            <div class="order-item">
+                                <span class="order-num">4</span>
+                                <input type="text" class="order-input" placeholder="Vierde item">
+                                <button class="btn-remove-item" title="Verwijder">✕</button>
+                            </div>
+                        </div>
+                        <button id="btn-add-order-item" class="btn btn-small btn-secondary">+ Item Toevoegen</button>
                     </div>
                     
                     <div class="input-group">
@@ -293,9 +412,9 @@
                     </div>
                     
                     <div class="quiz-questions-selector">
-                        <label>Selecteer Vragen</label>
+                        <label for="quiz-filter-category">Selecteer Vragen</label>
                         <div class="question-filters">
-                            <select id="quiz-filter-category">
+                            <select id="quiz-filter-category" title="Filter op categorie">
                                 <option value="">Alle Categorieën</option>
                             </select>
                             <input type="search" id="quiz-search-questions" placeholder="Zoeken...">

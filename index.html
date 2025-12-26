@@ -91,9 +91,61 @@
                 <div id="player-question-area">
                     <!-- Question content for player -->
                 </div>
-                <div id="answer-buttons" class="answer-grid">
+                
+                <!-- Standard Quiz Answer Buttons -->
+                <div id="answer-buttons" class="answer-grid player-input-quiz">
                     <!-- Answer buttons will be populated -->
                 </div>
+                
+                <!-- True/False Buttons -->
+                <div id="tf-buttons" class="tf-grid player-input-truefalse">
+                    <button id="btn-true" class="tf-answer-btn tf-answer-true" data-answer="true">
+                        <span class="tf-icon">✓</span>
+                        <span class="tf-text">Waar</span>
+                    </button>
+                    <button id="btn-false" class="tf-answer-btn tf-answer-false" data-answer="false">
+                        <span class="tf-icon">✗</span>
+                        <span class="tf-text">Niet Waar</span>
+                    </button>
+                </div>
+                
+                <!-- Type Answer Input -->
+                <div id="type-input" class="type-input-container player-input-type">
+                    <input type="text" id="type-answer-input" class="type-answer-field" 
+                           placeholder="Typ je antwoord..." maxlength="100" autocomplete="off">
+                    <button id="btn-submit-answer" class="btn btn-primary btn-submit-answer">
+                        <span>Verstuur</span>
+                        <span class="submit-icon">➤</span>
+                    </button>
+                </div>
+                
+                <!-- Slider Input -->
+                <div id="slider-input" class="slider-input-container player-input-slider">
+                    <div class="slider-current-value" id="slider-current">50</div>
+                    <div class="player-slider-range">
+                        <span id="player-slider-min">0</span>
+                        <input type="range" id="slider-answer-input" class="slider-answer-range" 
+                               min="0" max="100" value="50" title="Sleep om getal te kiezen">
+                        <span id="player-slider-max">100</span>
+                    </div>
+                    <button id="btn-submit-slider" class="btn btn-primary btn-submit-answer">
+                        <span>Bevestig</span>
+                        <span class="submit-icon">✓</span>
+                    </button>
+                </div>
+                
+                <!-- Order Input -->
+                <div id="order-input" class="order-input-container player-input-order">
+                    <p class="order-instruction">Sleep om de volgorde te wijzigen:</p>
+                    <div id="order-sortable" class="order-sortable-list">
+                        <!-- Sortable items will be populated -->
+                    </div>
+                    <button id="btn-submit-order" class="btn btn-primary btn-submit-answer">
+                        <span>Bevestig Volgorde</span>
+                        <span class="submit-icon">✓</span>
+                    </button>
+                </div>
+                
                 <div id="answer-feedback" class="feedback-overlay hidden">
                     <!-- Feedback after answering -->
                 </div>

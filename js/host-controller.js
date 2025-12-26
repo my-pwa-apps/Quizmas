@@ -278,12 +278,14 @@ class HostController {
         
         if (!question) return;
 
+        const questionType = question.questionType || 'quiz';
+
         // Update question number
         document.getElementById('question-number').textContent = 
             `${game.currentQuestion + 1}/${game.questions.length}`;
 
         // Update category
-        document.getElementById('category-badge').textContent = question.category || 'General';
+        document.getElementById('category-badge').textContent = question.category || 'Algemeen';
 
         // Update question text
         document.getElementById('question-text').textContent = question.text;
@@ -298,19 +300,42 @@ class HostController {
             mediaContainer.innerHTML = '';
         }
 
-        // Update answers
-        const shapes = gameController.getAnswerShapes();
-        const answersContainer = document.getElementById('host-answers');
-        answersContainer.innerHTML = question.answers.map((answer, index) => `
-            <div class="answer-option">
-                <span class="shape">${shapes[index]}</span>
-                <span class="text">${this.escapeHtml(answer)}</span>
-            </div>
-        `).join('');
+        // Hide all question type displays
+        document.querySelectorAll('.answers-display').forEach(el => el.style.display = 'none');
+
+        // Show the appropriate display for question type
+        if (questionType === 'quiz') {
+            const shapes = gameController.getAnswerShapes();
+            const answersContainer = document.getElementById('host-answers');
+            answersContainer.innerHTML = question.answers.map((answer, index) => `
+                <div class="answer-option">
+                    <span class="shape">${shapes[index]}</span>
+                    <span class="text">${this.escapeHtml(answer)}</span>
+                </div>
+            `).join('');
+            answersContainer.style.display = 'grid';
+        } else if (questionType === 'truefalse') {
+            document.getElementById('host-truefalse').style.display = 'block';
+        } else if (questionType === 'type') {
+            document.getElementById('host-type').style.display = 'block';
+        } else if (questionType === 'slider') {
+            const sliderContainer = document.getElementById('host-slider');
+            document.getElementById('slider-min').textContent = question.sliderMin || 0;
+            document.getElementById('slider-max').textContent = question.sliderMax || 100;
+            sliderContainer.style.display = 'block';
+        } else if (questionType === 'order') {
+            const orderContainer = document.getElementById('order-items-display');
+            // Shuffle items for display
+            const shuffled = [...(question.orderItems || [])].sort(() => Math.random() - 0.5);
+            orderContainer.innerHTML = shuffled.map(item => `
+                <div class="order-item-display">${this.escapeHtml(item)}</div>
+            `).join('');
+            document.getElementById('host-order').style.display = 'block';
+        }
 
         // Reset answer count
         document.getElementById('answers-received').textContent = 
-            `0 / ${gameController.getPlayerCount()} answered`;
+            `0 / ${gameController.getPlayerCount()} beantwoord`;
 
         // Show screen
         this.showScreen('host-question');
@@ -364,20 +389,72 @@ class HostController {
         
         if (!question) return;
 
+        const questionType = question.questionType || 'quiz';
+
         gameController.stopTimer();
 
         // Update question
         document.getElementById('reveal-question').textContent = question.text;
 
-        // Update answers with correct highlighted
-        const shapes = gameController.getAnswerShapes();
-        const answersContainer = document.getElementById('reveal-answers');
-        answersContainer.innerHTML = question.answers.map((answer, index) => `
-            <div class="answer-option ${index === question.correctIndex ? 'correct' : ''}">
-                <span class="shape">${shapes[index]}</span>
-                <span class="text">${this.escapeHtml(answer)}</span>
-            </div>
-        `).join('');
+        // Hide all reveal types
+        document.querySelectorAll('.answers-reveal').forEach(el => el.style.display = 'none');
+
+        // Show the appropriate reveal for question type
+        if (questionType === 'quiz') {
+            const shapes = gameController.getAnswerShapes();
+            const answersContainer = document.getElementById('reveal-answers');
+            answersContainer.innerHTML = question.answers.map((answer, index) => `
+                <div class="answer-option ${index === question.correctIndex ? 'correct' : ''}">
+                    <span class="shape">${shapes[index]}</span>
+                    <span class="text">${this.escapeHtml(answer)}</span>
+                </div>
+            `).join('');
+            answersContainer.style.display = 'grid';
+        } else if (questionType === 'truefalse') {
+            const correctAnswer = question.correctAnswer === true;
+            document.getElementById('reveal-tf-true').classList.toggle('correct', correctAnswer);
+            document.getElementById('reveal-tf-false').classList.toggle('correct', !correctAnswer);
+            document.getElementById('reveal-truefalse').style.display = 'block';
+        } else if (questionType === 'type') {
+            document.getElementById('reveal-correct-answer').textContent = question.correctAnswer;
+            // Show player answers
+            const answers = gameController.getAnswersForQuestion(questionIndex);
+            const listContainer = document.getElementById('player-answers-list');
+            listContainer.innerHTML = Object.values(answers).map(a => {
+                const isCorrect = this.checkTypeAnswer(a.answer, question.correctAnswer);
+                return `<div class="player-answer-chip ${isCorrect ? 'correct' : 'wrong'}">${this.escapeHtml(a.answer)}</div>`;
+            }).join('');
+            document.getElementById('reveal-type').style.display = 'block';
+        } else if (questionType === 'slider') {
+            const min = question.sliderMin || 0;
+            const max = question.sliderMax || 100;
+            const correct = question.correctAnswer || 50;
+            const tolerance = question.tolerance || 5;
+            
+            document.getElementById('reveal-slider-answer').textContent = correct;
+            document.getElementById('reveal-slider-min').textContent = min;
+            document.getElementById('reveal-slider-max').textContent = max;
+            
+            const range = max - min;
+            const correctPercent = ((correct - min) / range) * 100;
+            const tolerancePercent = (tolerance / range) * 100;
+            
+            document.getElementById('reveal-correct-marker').style.left = `${correctPercent}%`;
+            document.getElementById('reveal-tolerance-zone').style.left = `${correctPercent - tolerancePercent}%`;
+            document.getElementById('reveal-tolerance-zone').style.width = `${tolerancePercent * 2}%`;
+            
+            document.getElementById('reveal-slider').style.display = 'block';
+        } else if (questionType === 'order') {
+            const correctOrder = question.orderItems || [];
+            const orderList = document.getElementById('reveal-correct-order');
+            orderList.innerHTML = correctOrder.map((item, index) => `
+                <div class="correct-order-item">
+                    <span class="order-position">${index + 1}</span>
+                    <span>${this.escapeHtml(item)}</span>
+                </div>
+            `).join('');
+            document.getElementById('reveal-order').style.display = 'block';
+        }
 
         // Calculate stats
         const stats = gameController.getAnswerStats(questionIndex);
@@ -394,14 +471,37 @@ class HostController {
         this.showScreen('host-reveal');
     }
 
+    checkTypeAnswer(playerAnswer, correctAnswer) {
+        if (!playerAnswer || !correctAnswer) return false;
+        const normalize = (str) => str.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+        return normalize(playerAnswer) === normalize(correctAnswer);
+    }
+
     async calculateAndUpdateScores(questionIndex, question) {
         const answers = gameController.getAnswersForQuestion(questionIndex);
         const maxTime = question.timeLimit || gameController.currentGame.settings.timePerQuestion;
+        const questionType = question.questionType || 'quiz';
 
         for (const [playerId, answer] of Object.entries(answers)) {
-            const isCorrect = answer.answer === question.correctIndex;
-            const points = gameController.calculatePoints(isCorrect, answer.timeRemaining, maxTime);
+            let isCorrect = false;
             
+            if (questionType === 'quiz') {
+                isCorrect = answer.answer === question.correctIndex;
+            } else if (questionType === 'truefalse') {
+                isCorrect = answer.answer === question.correctAnswer;
+            } else if (questionType === 'type') {
+                isCorrect = this.checkTypeAnswer(answer.answer, question.correctAnswer);
+            } else if (questionType === 'slider') {
+                const tolerance = question.tolerance || 5;
+                const diff = Math.abs(answer.answer - question.correctAnswer);
+                isCorrect = diff <= tolerance;
+            } else if (questionType === 'order') {
+                const correctOrder = question.orderItems || [];
+                const playerOrder = answer.answer || [];
+                isCorrect = JSON.stringify(correctOrder) === JSON.stringify(playerOrder);
+            }
+            
+            const points = gameController.calculatePoints(isCorrect, answer.timeRemaining, maxTime);
             await gameController.updateScore(playerId, points, !isCorrect);
         }
 

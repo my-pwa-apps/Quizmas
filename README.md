@@ -1,224 +1,148 @@
 # Quizmas 🎄
 
-A Kahoot-style quiz game built for fun gatherings, parties, and educational events!
+Een Kahoot-stijl quizspel voor gezellige familiebijeenkomsten en feestjes!
 
-## Features
+## Functies
 
-- **Multi-player Quiz Game**: Host displays on TV/large screen, players join via phone/tablet
-- **Real-time Sync**: Powered by Firebase Realtime Database
-- **Seasonal Themes**: Automatic theming based on calendar (Christmas, Halloween, etc.)
-- **Multiple Question Types**: Text, images, videos, and audio
-- **Auto-Generated Questions**: Built-in question generator with 150+ questions across 13 categories
-- **Admin Panel**: Create and manage quizzes, questions, and categories
-- **Mobile-First Design**: Beautiful, responsive UI for all devices
+- **Multiplayer Quiz Spel**: Host toont op TV/groot scherm, spelers doen mee via telefoon/tablet
+- **Real-time Sync**: Aangedreven door Firebase Realtime Database
+- **Seizoensthema's**: Automatische thema's op basis van kalender (Kerst, Halloween, etc.)
+- **Meerdere Vraagtypen**: Quiz, Waar/Niet Waar, Type Antwoord, Slider, Volgorde
+- **Auto-Gegenereerde Vragen**: Ingebouwde vragengenerator met 150+ Nederlandse vragen in 14 categorieën
+- **Beheerpaneel**: Maak en beheer quizzen, vragen en categorieën
+- **Mobile-First Ontwerp**: Mooie, responsive UI voor alle apparaten
 
-## Getting Started
+## Aan de Slag
 
-### Prerequisites
+### Vereisten
 
-- A web server (or use VS Code Live Server extension)
-- Firebase account (already configured)
+- Een webserver (of gebruik VS Code Live Server extensie)
+- Firebase account (al geconfigureerd)
 
-### Running Locally
+### Lokaal Draaien
 
-1. **Clone the repository**
+1. **Clone de repository**
    ```bash
    git clone <repo-url>
    cd Quizmas
    ```
 
-2. **Start a local server**
+2. **Start een lokale server**
    
-   Using VS Code Live Server:
-   - Install the "Live Server" extension
-   - Right-click on `index.html` and select "Open with Live Server"
+   Met VS Code Live Server:
+   - Installeer de "Live Server" extensie
+   - Rechts-klik op `index.html` en selecteer "Open with Live Server"
    
-   Or using Python:
+   Of met Python:
    ```bash
    python -m http.server 8080
    ```
 
 3. **Open in browser**
-   - Navigate to `http://localhost:8080` (or the Live Server URL)
+   - Ga naar `http://localhost:8080` (of de Live Server URL)
 
-### Hosting a Game
+### Een Spel Hosten
 
-1. Open `host.html` in a browser on the TV/main display
-2. Select a quiz and configure settings
-3. Click "Create Game" to get a PIN
-4. Share the PIN with players
+1. Open `host.html` in een browser op de TV/hoofdscherm
+2. Selecteer een quiz en configureer instellingen
+3. Klik "Maak Spel" om een PIN te krijgen
+4. Deel de PIN met spelers
 
-### Joining a Game
+### Meedoen met een Spel
 
-1. Open `index.html` on a phone/tablet
-2. Click "Join Game"
-3. Enter the PIN and your nickname
-4. Choose an avatar and join!
+1. Open `index.html` op een telefoon/tablet
+2. Klik "Meedoen"
+3. Voer de PIN en je bijnaam in
+4. Kies een avatar en doe mee!
 
-### Admin Panel
+### Beheerpaneel
 
 1. Open `admin.html`
-2. Login with:
+2. Log in met:
    - Email: `admin@quizmas.app`
-   - Password: `admin123`
-3. Create questions, quizzes, and categories
+   - Wachtwoord: `admin123`
+3. Maak vragen, quizzen en categorieën
 
-## Project Structure
+## Projectstructuur
 
 ```
 Quizmas/
-├── index.html          # Player join page
-├── host.html           # Host/TV display
-├── admin.html          # Admin panel
+├── index.html          # Speler join pagina
+├── host.html           # Host/TV weergave
+├── admin.html          # Beheerpaneel
 ├── css/
-│   ├── styles.css      # Main styles
-│   ├── themes.css      # Seasonal themes
-│   ├── host.css        # Host-specific styles
-│   └── admin.css       # Admin panel styles
+│   ├── styles.css      # Hoofdstijlen
+│   ├── themes.css      # Seizoensthema's
+│   ├── host.css        # Host-specifieke stijlen
+│   └── admin.css       # Beheerpaneel stijlen
 ├── js/
-│   ├── firebase-config.js    # Firebase configuration
-│   ├── firebase-service.js   # Firebase API layer
-│   ├── theme-manager.js      # Seasonal theme handler
-│   ├── game-controller.js    # Core game logic
+│   ├── firebase-config.js    # Firebase configuratie
+│   ├── firebase-service.js   # Firebase API laag
+│   ├── theme-manager.js      # Seizoensthema handler
+│   ├── game-controller.js    # Kern spellogica
 │   ├── host-controller.js    # Host view controller
-│   ├── player-controller.js  # Player view controller
-│   ├── admin-controller.js   # Admin panel controller
-│   ├── question-generator.js # Auto question generator
+│   ├── player-controller.js  # Speler view controller
+│   ├── admin-controller.js   # Beheerpaneel controller
+│   ├── question-generator.js # Auto vragengenerator
 │   └── app.js               # Main app entry
 └── assets/
-    ├── sounds/         # Audio files
-    └── README.md       # Asset documentation
+    └── sounds/         # Geluidsbestanden
 ```
 
-## Seasonal Themes
+## Vraagtypen
 
-The app automatically applies themes based on the current date:
+| Type | Beschrijving |
+|------|-------------|
+| 🎯 Quiz | Meerkeuze met 2-4 antwoorden |
+| ✓/✗ Waar/Niet Waar | Simpele ja/nee vragen |
+| ⌨️ Type Antwoord | Vrij tekstveld |
+| 🎚️ Slider | Schat een getal |
+| ↕️ Volgorde | Zet items in juiste volgorde |
 
-| Theme | Dates |
-|-------|-------|
-| 🎄 Christmas | Dec 20-26 |
-| 🎆 New Year | Dec 27 - Jan 5 |
-| 💕 Valentine's | Feb 10-14 |
-| ☘️ St. Patrick's | Mar 14-17 |
-| 🐰 Easter | Variable |
-| 🎃 Halloween | Oct 25-31 |
-| 🦃 Thanksgiving | Nov 20-28 |
-| ☀️ Summer | Jun 21 - Aug 31 |
+## Seizoensthema's
 
-## Question Categories
+De app past automatisch thema's toe op basis van de datum:
 
-- 🎯 General Knowledge
-- 📜 History
-- 🌍 Geography
-- 🔬 Science
-- ⚽ Sports
-- 🎵 Music
-- 🎬 Movies & TV
-- 📚 Literature
-- 🎨 Art
-- 🍕 Food & Drink
-- 🦁 Nature & Animals
-- 💻 Technology
-- 🎄 Christmas Special
+| Thema | Datums |
+|-------|--------|
+| 🎄 Kerst | Dec 20-26 |
+| 🎆 Nieuwjaar | Dec 27 - Jan 5 |
+| 💕 Valentijn | Feb 10-14 |
+| 🐰 Pasen | Variabel |
+| 🎃 Halloween | Okt 25-31 |
+| ☀️ Zomer | Jun 21 - Aug 31 |
 
-## Firebase Setup
+## Vraagcategorieën
 
-The app uses Firebase for:
-- **Realtime Database**: Game state, players, answers
-- **Firestore**: Questions, quizzes, categories
-- **Authentication**: Anonymous players, admin login
-
-Firebase is pre-configured. If you need to use your own Firebase project:
-
-1. Create a Firebase project at https://console.firebase.google.com
-2. Enable Realtime Database and Firestore
-3. Update the config in `js/firebase-config.js`
-4. Set up security rules (see below)
-
-### Security Rules
-
-**Realtime Database Rules:**
-```json
-{
-  "rules": {
-    "games": {
-      "$gameId": {
-        ".read": true,
-        ".write": true
-      }
-    }
-  }
-}
-```
-
-**Firestore Rules:**
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}
-```
-
-⚠️ **Note**: These are development rules. For production, implement proper authentication rules.
-
-## Customization
-
-### Adding New Questions
-
-1. Go to Admin Panel → Questions
-2. Click "New Question"
-3. Fill in the question details
-4. Add answers and mark the correct one
-5. Save
-
-### Creating Quizzes
-
-1. Go to Admin Panel → Quizzes
-2. Click "New Quiz"
-3. Name your quiz
-4. Select questions to include
-5. Save
-
-### Adding Sound Effects
-
-Place MP3 files in `assets/sounds/`:
-- `correct.mp3` - Correct answer sound
-- `wrong.mp3` - Wrong answer sound
-- `countdown.mp3` - Timer countdown
-- `winner.mp3` - Victory celebration
+- 🎯 Algemene Kennis
+- 🇳🇱 Nederland
+- 📜 Geschiedenis
+- 🌍 Aardrijkskunde
+- 🔬 Wetenschap
+- ⚽ Sport
+- 🎵 Muziek
+- 🎬 Films & TV
+- 📚 Literatuur
+- 🎨 Kunst
+- 🍕 Eten & Drinken
+- 🦁 Natuur & Dieren
+- 💻 Technologie
+- 🎄 Kerst Speciaal
 
 ## Tech Stack
 
 - **Frontend**: Vanilla JavaScript (ES6 Modules)
-- **Styling**: Custom CSS with CSS Variables
+- **Styling**: Custom CSS met CSS Variables
 - **Backend**: Firebase (Realtime Database + Firestore)
 - **Fonts**: Google Fonts (Fredoka One, Nunito)
 
-## Browser Support
+## Browser Ondersteuning
 
-- Chrome (recommended)
+- Chrome (aanbevolen)
 - Firefox
 - Safari
 - Edge
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT License - feel free to use for personal or commercial projects.
-
-## Credits
-
-- Inspired by Kahoot!
-- Built with ❤️ for family game nights
-- Emoji graphics from Unicode standard
-
 ---
 
-🎄 **Happy Quizzing!** 🎄
+🎄 **Veel Quiz Plezier!** 🎄

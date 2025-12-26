@@ -1,6 +1,7 @@
 // ==========================================
 // QUIZMAS - Vragen Generator
 // Nederlandse trivia vragen voor de hele familie
+// Ondersteunt: Quiz, Waar/Niet Waar, Type Antwoord, Slider, Volgorde
 // ==========================================
 
 class QuestionGenerator {
@@ -22,15 +23,33 @@ class QuestionGenerator {
             technology: this.getTechnologieVragen(),
             christmas: this.getKerstVragen()
         };
+        
+        // Extra vragen met verschillende typen
+        this.mixedTypeQuestions = this.getMixedTypeVragen();
     }
 
-    async generate(category, difficulty, count) {
+    async generate(category, difficulty, count, includeMixedTypes = true) {
         // Haal vragen op uit de bank
         let questions = this.questionBanks[category] || this.questionBanks.general;
         
         // Filter op moeilijkheid als niet gemengd
         if (difficulty !== 'mixed') {
             questions = questions.filter(q => q.difficulty === difficulty);
+        }
+
+        // Voeg standaard questionType toe als niet aanwezig
+        questions = questions.map(q => ({
+            ...q,
+            questionType: q.questionType || 'quiz'
+        }));
+
+        // Voeg gemengde vraagtypen toe als gewenst
+        if (includeMixedTypes) {
+            let mixedQuestions = [...this.mixedTypeQuestions];
+            if (difficulty !== 'mixed') {
+                mixedQuestions = mixedQuestions.filter(q => q.difficulty === difficulty);
+            }
+            questions = [...questions, ...mixedQuestions];
         }
 
         // Schud en neem het gevraagde aantal
@@ -40,7 +59,7 @@ class QuestionGenerator {
         // Voeg categorie info toe
         return questions.map(q => ({
             ...q,
-            category: category,
+            category: q.category || category,
             mediaType: q.mediaType || 'none',
             mediaUrl: q.mediaUrl || null,
             timeLimit: q.timeLimit || 20
@@ -53,6 +72,284 @@ class QuestionGenerator {
             [array[i], array[j]] = [array[j], array[i]];
         }
         return array;
+    }
+
+    // ==========================================
+    // Gemengde Vraagtypen
+    // ==========================================
+
+    getMixedTypeVragen() {
+        return [
+            // WAAR/NIET WAAR VRAGEN
+            {
+                questionType: "truefalse",
+                text: "Amsterdam is de hoofdstad van Nederland",
+                correctAnswer: true,
+                difficulty: "easy",
+                category: "nederland"
+            },
+            {
+                questionType: "truefalse",
+                text: "De Eiffeltoren staat in Londen",
+                correctAnswer: false,
+                difficulty: "easy",
+                category: "geography"
+            },
+            {
+                questionType: "truefalse",
+                text: "Een dolfijn is een vis",
+                correctAnswer: false,
+                difficulty: "easy",
+                category: "nature"
+            },
+            {
+                questionType: "truefalse",
+                text: "De zon is een ster",
+                correctAnswer: true,
+                difficulty: "easy",
+                category: "science"
+            },
+            {
+                questionType: "truefalse",
+                text: "Mozart componeerde de Negende Symfonie",
+                correctAnswer: false,
+                difficulty: "medium",
+                category: "music"
+            },
+            {
+                questionType: "truefalse",
+                text: "Water kookt bij 100 graden Celsius op zeeniveau",
+                correctAnswer: true,
+                difficulty: "easy",
+                category: "science"
+            },
+            {
+                questionType: "truefalse",
+                text: "Nederland heeft een koning",
+                correctAnswer: true,
+                difficulty: "easy",
+                category: "nederland"
+            },
+            {
+                questionType: "truefalse",
+                text: "De Grote Muur van China is zichtbaar vanuit de ruimte",
+                correctAnswer: false,
+                difficulty: "medium",
+                category: "history"
+            },
+            {
+                questionType: "truefalse",
+                text: "Bananen groeien aan bomen",
+                correctAnswer: false, // Ze groeien aan planten
+                difficulty: "medium",
+                category: "nature"
+            },
+            {
+                questionType: "truefalse",
+                text: "Vincent van Gogh was een Nederlandse schilder",
+                correctAnswer: true,
+                difficulty: "easy",
+                category: "art"
+            },
+
+            // TYPE ANTWOORD VRAGEN
+            {
+                questionType: "type",
+                text: "Welk element heeft het symbool 'O'?",
+                correctAnswer: "zuurstof",
+                difficulty: "medium",
+                category: "science"
+            },
+            {
+                questionType: "type",
+                text: "In welke stad staat het Rijksmuseum?",
+                correctAnswer: "Amsterdam",
+                difficulty: "easy",
+                category: "nederland"
+            },
+            {
+                questionType: "type",
+                text: "Hoe heet de langste rivier van Nederland?",
+                correctAnswer: "Rijn",
+                difficulty: "medium",
+                category: "nederland"
+            },
+            {
+                questionType: "type",
+                text: "Welk land grenst aan Nederland én België?",
+                correctAnswer: "Duitsland",
+                difficulty: "medium",
+                category: "geography"
+            },
+            {
+                questionType: "type",
+                text: "Hoe heet de huidige koning van Nederland?",
+                correctAnswer: "Willem-Alexander",
+                difficulty: "easy",
+                category: "nederland"
+            },
+            {
+                questionType: "type",
+                text: "Welke planeet is het dichtst bij de zon?",
+                correctAnswer: "Mercurius",
+                difficulty: "medium",
+                category: "science"
+            },
+            {
+                questionType: "type",
+                text: "Hoe noem je een groep wolven?",
+                correctAnswer: "roedel",
+                difficulty: "medium",
+                category: "nature"
+            },
+            {
+                questionType: "type",
+                text: "Welk feest vieren we op 5 december in Nederland?",
+                correctAnswer: "Sinterklaas",
+                difficulty: "easy",
+                category: "nederland"
+            },
+
+            // SLIDER VRAGEN (Schat een getal)
+            {
+                questionType: "slider",
+                text: "Hoeveel provincies heeft Nederland?",
+                correctAnswer: 12,
+                sliderMin: 5,
+                sliderMax: 20,
+                tolerance: 0,
+                difficulty: "medium",
+                category: "nederland"
+            },
+            {
+                questionType: "slider",
+                text: "In welk jaar begon de Tweede Wereldoorlog?",
+                correctAnswer: 1939,
+                sliderMin: 1900,
+                sliderMax: 1950,
+                tolerance: 0,
+                difficulty: "medium",
+                category: "history"
+            },
+            {
+                questionType: "slider",
+                text: "Hoeveel graden is een rechte hoek?",
+                correctAnswer: 90,
+                sliderMin: 0,
+                sliderMax: 180,
+                tolerance: 0,
+                difficulty: "easy",
+                category: "science"
+            },
+            {
+                questionType: "slider",
+                text: "Hoeveel centimeter is één meter?",
+                correctAnswer: 100,
+                sliderMin: 50,
+                sliderMax: 200,
+                tolerance: 0,
+                difficulty: "easy",
+                category: "science"
+            },
+            {
+                questionType: "slider",
+                text: "Ongeveer hoeveel inwoners heeft Nederland (in miljoenen)?",
+                correctAnswer: 18,
+                sliderMin: 10,
+                sliderMax: 30,
+                tolerance: 1,
+                difficulty: "medium",
+                category: "nederland"
+            },
+            {
+                questionType: "slider",
+                text: "Hoeveel letters heeft het Nederlandse alfabet?",
+                correctAnswer: 26,
+                sliderMin: 20,
+                sliderMax: 35,
+                tolerance: 0,
+                difficulty: "easy",
+                category: "general"
+            },
+            {
+                questionType: "slider",
+                text: "In welk jaar werd de Euro ingevoerd in Nederland?",
+                correctAnswer: 2002,
+                sliderMin: 1995,
+                sliderMax: 2010,
+                tolerance: 0,
+                difficulty: "medium",
+                category: "nederland"
+            },
+            {
+                questionType: "slider",
+                text: "Hoeveel minuten duurt een voetbalwedstrijd (exclusief blessure tijd)?",
+                correctAnswer: 90,
+                sliderMin: 60,
+                sliderMax: 120,
+                tolerance: 0,
+                difficulty: "easy",
+                category: "sports"
+            },
+
+            // VOLGORDE VRAGEN
+            {
+                questionType: "order",
+                text: "Zet deze planeten in volgorde van dichtst bij tot verst van de zon:",
+                orderItems: ["Mercurius", "Venus", "Aarde", "Mars"],
+                difficulty: "medium",
+                category: "science"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze Nederlandse steden van noord naar zuid:",
+                orderItems: ["Groningen", "Amsterdam", "Utrecht", "Maastricht"],
+                difficulty: "medium",
+                category: "nederland"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze historische gebeurtenissen in chronologische volgorde:",
+                orderItems: ["Ontdekking Amerika", "Franse Revolutie", "Eerste Wereldoorlog", "Maanlanding"],
+                difficulty: "hard",
+                category: "history"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze getallen van klein naar groot:",
+                orderItems: ["15", "42", "73", "99"],
+                difficulty: "easy",
+                category: "general"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze Nederlandse koningen in chronologische volgorde:",
+                orderItems: ["Willem I", "Willem II", "Willem III", "Wilhelmina"],
+                difficulty: "hard",
+                category: "nederland"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze seizoenen in volgorde zoals ze in Nederland voorkomen:",
+                orderItems: ["Lente", "Zomer", "Herfst", "Winter"],
+                difficulty: "easy",
+                category: "general"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze dieren van klein naar groot:",
+                orderItems: ["Muis", "Kat", "Hond", "Olifant"],
+                difficulty: "easy",
+                category: "nature"
+            },
+            {
+                questionType: "order",
+                text: "Zet deze Nederlandse feestdagen in chronologische volgorde:",
+                orderItems: ["Koningsdag", "Bevrijdingsdag", "Sinterklaas", "Kerst"],
+                difficulty: "easy",
+                category: "nederland"
+            }
+        ];
     }
 
     // ==========================================
