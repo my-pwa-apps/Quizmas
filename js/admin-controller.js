@@ -47,12 +47,10 @@ class AdminController {
     }
 
     setupLoginListeners() {
-        document.getElementById('btn-admin-login').addEventListener('click', () => this.login());
-        
-        document.getElementById('admin-password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.login();
-            }
+        const form = document.getElementById('admin-login-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.login();
         });
     }
 
@@ -817,12 +815,42 @@ class AdminController {
             <div class="preview-question">
                 <div class="q-text">${index + 1}. ${this.escapeHtml(q.text)}</div>
                 <div class="q-answers">
-                    ${q.answers.map((a, i) => `
-                        <span class="${i === q.correctIndex ? 'correct' : ''}">${this.escapeHtml(a)}</span>
-                    `).join('')}
+                    ${this.renderQuestionPreviewAnswers(q)}
                 </div>
             </div>
         `).join('');
+    }
+
+    renderQuestionPreviewAnswers(q) {
+        const type = q.questionType || 'quiz';
+        
+        switch (type) {
+            case 'quiz':
+                if (!q.answers) return '<span class="error">Geen antwoorden</span>';
+                return q.answers.map((a, i) => `
+                    <span class="${i === q.correctIndex ? 'correct' : ''}">${this.escapeHtml(a)}</span>
+                `).join('');
+            
+            case 'truefalse':
+                return `
+                    <span class="${q.correctAnswer === true ? 'correct' : ''}">Waar</span>
+                    <span class="${q.correctAnswer === false ? 'correct' : ''}">Niet Waar</span>
+                `;
+            
+            case 'type':
+                return `<span class="correct">Antwoord: ${this.escapeHtml(q.correctAnswer || '')}</span>`;
+            
+            case 'slider':
+                return `<span class="correct">Antwoord: ${q.correctAnswer} (±${q.tolerance || 0})</span>
+                        <span>Bereik: ${q.sliderMin} - ${q.sliderMax}</span>`;
+            
+            case 'order':
+                if (!q.orderItems) return '<span class="error">Geen items</span>';
+                return `<span class="correct">Volgorde: ${q.orderItems.map(item => this.escapeHtml(item)).join(' → ')}</span>`;
+            
+            default:
+                return '<span>Onbekend vraagtype</span>';
+        }
     }
 
     async saveGeneratedQuestions() {
