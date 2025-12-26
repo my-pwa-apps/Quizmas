@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizmas - Host Weergave</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/host.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="host-view">
+    <div id="app" class="container fullscreen">
+        <!-- Decorations -->
+        <div id="decorations"></div>
+
+        <!-- Host Setup Screen -->
+        <div id="host-setup" class="screen active">
+            <div class="host-setup-container">
+                <h1 class="logo">🎄 Quizmas 🎄</h1>
+                <h2>Host een Spel</h2>
+                
+                <div class="setup-options">
+                    <div class="option-group">
+                        <label>Selecteer Quiz</label>
+                        <select id="quiz-select" class="select-large">
+                            <option value="">Quizzen laden...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label>Vragen per Spel</label>
+                        <div class="number-selector">
+                            <button class="btn-num" id="btn-q-minus">-</button>
+                            <span id="question-count">10</span>
+                            <button class="btn-num" id="btn-q-plus">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label>Tijd per Vraag</label>
+                        <select id="time-select" class="select-large">
+                            <option value="10">10 seconden</option>
+                            <option value="15">15 seconden</option>
+                            <option value="20" selected>20 seconden</option>
+                            <option value="30">30 seconden</option>
+                            <option value="45">45 seconden</option>
+                            <option value="60">60 seconden</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="shuffle-questions" checked>
+                            Vragen Willekeurig
+                        </label>
+                        <label>
+                            <input type="checkbox" id="show-leaderboard" checked>
+                            Toon Scorebord na Elke Vraag
+                        </label>
+                    </div>
+                </div>
+                
+                <button id="btn-create-game" class="btn btn-primary btn-xlarge">Maak Spel</button>
+                <a href="index.html" class="link-back">← Terug naar Home</a>
+            </div>
+        </div>
+
+        <!-- Host Lobby Screen (showing PIN) -->
+        <div id="host-lobby" class="screen">
+            <div class="host-lobby-container">
+                <h2>Doe mee via <span class="highlight">quizmas.app</span></h2>
+                <div class="pin-display">
+                    <span class="pin-label">Spel PIN:</span>
+                    <span id="game-pin-display" class="pin-number">------</span>
+                </div>
+                
+                <div class="players-section">
+                    <h3>Spelers Aangemeld: <span id="player-count">0</span></h3>
+                    <div id="players-grid" class="players-grid">
+                        <!-- Players will appear here -->
+                    </div>
+                </div>
+                
+                <div class="lobby-actions">
+                    <button id="btn-start-game" class="btn btn-primary btn-xlarge" disabled>
+                        Start Spel
+                    </button>
+                    <button id="btn-cancel-game" class="btn btn-danger">Annuleer Spel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Display Screen -->
+        <div id="host-question" class="screen">
+            <div class="question-container">
+                <div class="question-header">
+                    <span id="question-number" class="q-number">1/10</span>
+                    <span id="category-badge" class="category-badge">Algemeen</span>
+                    <div id="host-timer" class="timer-circle">
+                        <span id="timer-value">20</span>
+                    </div>
+                </div>
+                
+                <div id="question-media" class="media-container">
+                    <!-- Video/Image/Audio will be inserted here -->
+                </div>
+                
+                <h2 id="question-text" class="question-text">Vraag komt hier?</h2>
+                
+                <div id="host-answers" class="answers-display">
+                    <!-- Answer options will be shown here -->
+                </div>
+                
+                <div class="answer-stats">
+                    <span id="answers-received">0 / 0 beantwoord</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Answer Reveal Screen -->
+        <div id="host-reveal" class="screen">
+            <div class="reveal-container">
+                <h2 id="reveal-question">Vraagtekst hier</h2>
+                <div id="reveal-answers" class="answers-reveal">
+                    <!-- Answers with correct highlighted -->
+                </div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <span class="stat-value" id="correct-count">0</span>
+                        <span class="stat-label">Goed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="wrong-count">0</span>
+                        <span class="stat-label">Fout</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="no-answer-count">0</span>
+                        <span class="stat-label">Geen Antwoord</span>
+                    </div>
+                </div>
+                <button id="btn-next-question" class="btn btn-primary btn-xlarge">Volgende</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="host-leaderboard" class="screen">
+            <div class="leaderboard-container">
+                <h2>🏆 Scorebord</h2>
+                <div id="leaderboard-list" class="leaderboard-list">
+                    <!-- Top players shown here -->
+                </div>
+                <button id="btn-continue" class="btn btn-primary btn-xlarge">Doorgaan</button>
+            </div>
+        </div>
+
+        <!-- Final Results Screen -->
+        <div id="host-final" class="screen">
+            <div class="final-container">
+                <h1>🎉 Spel Afgelopen! 🎉</h1>
+                <div class="podium">
+                    <div class="podium-place second">
+                        <div id="second-place" class="podium-player">
+                            <span class="podium-avatar"></span>
+                            <span class="podium-name">---</span>
+                            <span class="podium-score">0</span>
+                        </div>
+                        <div class="podium-stand">2</div>
+                    </div>
+                    <div class="podium-place first">
+                        <div id="first-place" class="podium-player">
+                            <span class="podium-avatar"></span>
+                            <span class="podium-name">---</span>
+                            <span class="podium-score">0</span>
+                        </div>
+                        <div class="podium-stand">1</div>
+                    </div>
+                    <div class="podium-place third">
+                        <div id="third-place" class="podium-player">
+                            <span class="podium-avatar"></span>
+                            <span class="podium-name">---</span>
+                            <span class="podium-score">0</span>
+                        </div>
+                        <div class="podium-stand">3</div>
+                    </div>
+                </div>
+                <div id="all-results" class="all-results">
+                    <!-- Full leaderboard -->
+                </div>
+                <div class="final-actions">
+                    <button id="btn-new-game" class="btn btn-primary btn-xlarge">Nieuw Spel</button>
+                    <button id="btn-home" class="btn btn-secondary">Terug naar Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="sound-join" src="assets/sounds/join.mp3" preload="auto"></audio>
+    <audio id="sound-countdown" src="assets/sounds/countdown.mp3" preload="auto"></audio>
+    <audio id="sound-times-up" src="assets/sounds/timesup.mp3" preload="auto"></audio>
+    <audio id="sound-reveal" src="assets/sounds/reveal.mp3" preload="auto"></audio>
+    <audio id="sound-winner" src="assets/sounds/winner.mp3" preload="auto"></audio>
+    <audio id="bg-music" src="assets/sounds/background.mp3" loop preload="auto"></audio>
+
+    <!-- Firebase & Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/firebase-service.js"></script>
+    <script type="module" src="js/theme-manager.js"></script>
+    <script type="module" src="js/game-controller.js"></script>
+    <script type="module" src="js/host-controller.js"></script>
+</body>
+</html>

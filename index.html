@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizmas - Het Ultieme Familie Quizspel</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- Decorations container for seasonal themes -->
+        <div id="decorations"></div>
+        
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen active">
+            <div class="logo-container">
+                <h1 class="logo">🎄 Quizmas 🎄</h1>
+                <p class="tagline">Het Ultieme Familie Quizspel!</p>
+            </div>
+            
+            <div class="menu-buttons">
+                <button id="btn-join-game" class="btn btn-primary btn-large">
+                    <span class="btn-icon">🎮</span>
+                    Meedoen
+                </button>
+                <button id="btn-host-game" class="btn btn-secondary btn-large">
+                    <span class="btn-icon">📺</span>
+                    Spel Hosten
+                </button>
+                <button id="btn-admin" class="btn btn-tertiary btn-large">
+                    <span class="btn-icon">⚙️</span>
+                    Beheer
+                </button>
+            </div>
+            
+            <div class="footer-info">
+                <p>Speel op elk apparaat • Maak eigen quizzen • Veel plezier!</p>
+            </div>
+        </div>
+
+        <!-- Join Game Screen -->
+        <div id="join-screen" class="screen">
+            <button class="btn-back" id="btn-back-join">← Terug</button>
+            <div class="join-container">
+                <h2>Doe Mee met een Spel</h2>
+                <div class="input-group">
+                    <label for="game-pin">Spel PIN</label>
+                    <input type="text" id="game-pin" placeholder="Voer PIN in" maxlength="6" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="player-name">Jouw Bijnaam</label>
+                    <input type="text" id="player-name" placeholder="Voer bijnaam in" maxlength="20" autocomplete="off">
+                </div>
+                <div class="avatar-selection">
+                    <label>Kies Avatar</label>
+                    <div class="avatar-grid" id="avatar-grid">
+                        <!-- Avatars will be populated by JS -->
+                    </div>
+                </div>
+                <button id="btn-join-submit" class="btn btn-primary btn-large">Meedoen!</button>
+                <p id="join-error" class="error-message"></p>
+            </div>
+        </div>
+
+        <!-- Player Waiting Room -->
+        <div id="player-lobby" class="screen">
+            <div class="lobby-container">
+                <h2>Je bent erin! 🎉</h2>
+                <div class="player-info-card">
+                    <span id="lobby-avatar" class="avatar-large"></span>
+                    <span id="lobby-nickname" class="nickname"></span>
+                </div>
+                <p class="waiting-text">Wachten tot de host begint...</p>
+                <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Game Screen -->
+        <div id="player-game" class="screen">
+            <div class="player-game-container">
+                <div class="player-header">
+                    <span id="player-score-display">0 ptn</span>
+                    <span id="player-streak">🔥 0</span>
+                </div>
+                <div id="question-timer-player" class="timer-bar"></div>
+                <div id="player-question-area">
+                    <!-- Question content for player -->
+                </div>
+                <div id="answer-buttons" class="answer-grid">
+                    <!-- Answer buttons will be populated -->
+                </div>
+                <div id="answer-feedback" class="feedback-overlay hidden">
+                    <!-- Feedback after answering -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Results Screen -->
+        <div id="player-results" class="screen">
+            <div class="results-container">
+                <h2 id="results-title">Spel Afgelopen!</h2>
+                <div id="final-score-card">
+                    <span class="score-label">Jouw Score</span>
+                    <span id="final-score" class="score-value">0</span>
+                </div>
+                <div id="final-position">
+                    <span class="position-label">Positie</span>
+                    <span id="position-value" class="position-number">#1</span>
+                </div>
+                <button id="btn-play-again" class="btn btn-primary">Opnieuw Spelen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements for sound effects -->
+    <audio id="sound-correct" src="assets/sounds/correct.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="assets/sounds/wrong.mp3" preload="auto"></audio>
+    <audio id="sound-tick" src="assets/sounds/tick.mp3" preload="auto"></audio>
+    <audio id="sound-countdown" src="assets/sounds/countdown.mp3" preload="auto"></audio>
+    <audio id="sound-winner" src="assets/sounds/winner.mp3" preload="auto"></audio>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/firebase-service.js"></script>
+    <script type="module" src="js/theme-manager.js"></script>
+    <script type="module" src="js/game-controller.js"></script>
+    <script type="module" src="js/player-controller.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

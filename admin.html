@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizmas - Beheerpaneel</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-view">
+    <div id="app" class="container">
+        <div id="decorations"></div>
+
+        <!-- Admin Login -->
+        <div id="admin-login" class="screen active">
+            <div class="login-container">
+                <h1 class="logo">🎄 Quizmas Beheer 🎄</h1>
+                <div class="login-form">
+                    <div class="input-group">
+                        <label for="admin-email">E-mail</label>
+                        <input type="email" id="admin-email" placeholder="admin@quizmas.app">
+                    </div>
+                    <div class="input-group">
+                        <label for="admin-password">Wachtwoord</label>
+                        <input type="password" id="admin-password" placeholder="Wachtwoord">
+                    </div>
+                    <button id="btn-admin-login" class="btn btn-primary btn-large">Inloggen</button>
+                    <p id="login-error" class="error-message"></p>
+                    <p class="login-hint">Eerste keer? Gebruik: admin@quizmas.app / admin123</p>
+                </div>
+                <a href="index.html" class="link-back">← Terug naar Home</a>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="screen">
+            <header class="admin-header">
+                <h1>🎄 Quizmas Beheer</h1>
+                <div class="header-actions">
+                    <span id="admin-user"></span>
+                    <button id="btn-logout" class="btn btn-small">Uitloggen</button>
+                </div>
+            </header>
+
+            <nav class="admin-nav">
+                <button class="nav-btn active" data-tab="quizzes">📚 Quizzen</button>
+                <button class="nav-btn" data-tab="questions">❓ Vragen</button>
+                <button class="nav-btn" data-tab="categories">📁 Categorieën</button>
+                <button class="nav-btn" data-tab="generate">🤖 Auto Genereren</button>
+                <button class="nav-btn" data-tab="stats">📊 Statistieken</button>
+            </nav>
+
+            <main class="admin-content">
+                <!-- Quizzes Tab -->
+                <div id="tab-quizzes" class="tab-content active">
+                    <div class="tab-header">
+                        <h2>Beheer Quizzen</h2>
+                        <button id="btn-new-quiz" class="btn btn-primary">+ Nieuwe Quiz</button>
+                    </div>
+                    <div id="quizzes-list" class="items-list">
+                        <!-- Quiz cards will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Questions Tab -->
+                <div id="tab-questions" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Vragenbank</h2>
+                        <div class="filter-bar">
+                            <select id="filter-category" class="select-medium">
+                                <option value="">Alle Categorieën</option>
+                            </select>
+                            <select id="filter-type" class="select-medium">
+                                <option value="">Alle Types</option>
+                                <option value="text">Alleen Tekst</option>
+                                <option value="image">Met Afbeelding</option>
+                                <option value="video">Met Video</option>
+                                <option value="audio">Met Audio</option>
+                            </select>
+                            <input type="search" id="search-questions" placeholder="Zoek vragen...">
+                        </div>
+                        <button id="btn-new-question" class="btn btn-primary">+ Nieuwe Vraag</button>
+                    </div>
+                    <div id="questions-list" class="items-list">
+                        <!-- Questions will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Categories Tab -->
+                <div id="tab-categories" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Categorieën</h2>
+                        <button id="btn-new-category" class="btn btn-primary">+ Nieuwe Categorie</button>
+                    </div>
+                    <div id="categories-list" class="categories-grid">
+                        <!-- Categories will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Auto Generate Tab -->
+                <div id="tab-generate" class="tab-content">
+                    <div class="generate-container">
+                        <h2>🤖 Vragen Automatisch Genereren</h2>
+                        <p class="description">Genereer automatisch vragen voor verschillende categorieën. Gebruikt voorgedefinieerde templates en trivia databases.</p>
+                        
+                        <div class="generate-form">
+                            <div class="option-group">
+                                <label>Categorie</label>
+                                <select id="gen-category" class="select-large">
+                                    <option value="general">Algemene Kennis</option>
+                                    <option value="nederland">Nederland 🇳🇱</option>
+                                    <option value="history">Geschiedenis</option>
+                                    <option value="geography">Aardrijkskunde</option>
+                                    <option value="science">Wetenschap</option>
+                                    <option value="sports">Sport</option>
+                                    <option value="music">Muziek</option>
+                                    <option value="movies">Films & TV</option>
+                                    <option value="literature">Literatuur</option>
+                                    <option value="art">Kunst</option>
+                                    <option value="food">Eten & Drinken</option>
+                                    <option value="nature">Natuur & Dieren</option>
+                                    <option value="technology">Technologie</option>
+                                    <option value="christmas">Kerst Speciaal 🎄</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label>Moeilijkheid</label>
+                                <select id="gen-difficulty" class="select-large">
+                                    <option value="easy">Makkelijk</option>
+                                    <option value="medium" selected>Gemiddeld</option>
+                                    <option value="hard">Moeilijk</option>
+                                    <option value="mixed">Gemengd</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label>Aantal Vragen</label>
+                                <input type="number" id="gen-count" value="10" min="1" max="50" class="input-medium">
+                            </div>
+                            
+                            <button id="btn-generate" class="btn btn-primary btn-large">
+                                🎲 Genereer Vragen
+                            </button>
+                        </div>
+                        
+                        <div id="generated-preview" class="generated-preview hidden">
+                            <h3>Gegenereerde Vragen Voorbeeld</h3>
+                            <div id="preview-list"></div>
+                            <div class="preview-actions">
+                                <button id="btn-save-generated" class="btn btn-primary">Alles Opslaan</button>
+                                <button id="btn-discard-generated" class="btn btn-secondary">Verwijderen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Tab -->
+                <div id="tab-stats" class="tab-content">
+                    <h2>📊 Spelstatistieken</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-total-games">0</span>
+                            <span class="stat-label">Totaal Spellen</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-total-players">0</span>
+                            <span class="stat-label">Totaal Spelers</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-total-questions">0</span>
+                            <span class="stat-label">Vragen</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-total-quizzes">0</span>
+                            <span class="stat-label">Quizzen</span>
+                        </div>
+                    </div>
+                    <div class="recent-games">
+                        <h3>Recente Spellen</h3>
+                        <div id="recent-games-list"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Question Editor Modal -->
+        <div id="question-modal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 id="modal-title">Nieuwe Vraag</h3>
+                    <button class="modal-close" id="close-question-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="q-category">Categorie</label>
+                            <select id="q-category" class="select-large">
+                                <!-- Categories populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="q-difficulty">Moeilijkheid</label>
+                            <select id="q-difficulty" class="select-large">
+                                <option value="easy">Makkelijk</option>
+                                <option value="medium">Gemiddeld</option>
+                                <option value="hard">Moeilijk</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="q-text">Vraagtekst</label>
+                        <textarea id="q-text" rows="3" placeholder="Voer je vraag in..."></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Media (Optioneel)</label>
+                        <div class="media-selector">
+                            <button class="media-btn active" data-type="none">Geen</button>
+                            <button class="media-btn" data-type="image">🖼️ Afbeelding</button>
+                            <button class="media-btn" data-type="video">🎬 Video</button>
+                            <button class="media-btn" data-type="audio">🎵 Audio</button>
+                        </div>
+                        <div id="media-input-container" class="hidden">
+                            <input type="url" id="q-media-url" placeholder="Voer media URL in (YouTube, afbeelding link, etc.)">
+                            <p class="hint">Voor YouTube, plak gewoon de video URL. Voor audio, gebruik MP3/OGG links.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="answers-editor">
+                        <label>Antwoorden (markeer het juiste)</label>
+                        <div class="answer-row">
+                            <input type="radio" name="correct" value="0" checked>
+                            <span class="answer-color" style="background: #e21b3c"></span>
+                            <input type="text" class="answer-input" id="q-answer-0" placeholder="Antwoord 1">
+                        </div>
+                        <div class="answer-row">
+                            <input type="radio" name="correct" value="1">
+                            <span class="answer-color" style="background: #1368ce"></span>
+                            <input type="text" class="answer-input" id="q-answer-1" placeholder="Antwoord 2">
+                        </div>
+                        <div class="answer-row">
+                            <input type="radio" name="correct" value="2">
+                            <span class="answer-color" style="background: #d89e00"></span>
+                            <input type="text" class="answer-input" id="q-answer-2" placeholder="Antwoord 3 (optioneel)">
+                        </div>
+                        <div class="answer-row">
+                            <input type="radio" name="correct" value="3">
+                            <span class="answer-color" style="background: #26890c"></span>
+                            <input type="text" class="answer-input" id="q-answer-3" placeholder="Antwoord 4 (optioneel)">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="q-explanation">Uitleg (Optioneel)</label>
+                        <textarea id="q-explanation" rows="2" placeholder="Leuk weetje of uitleg na het antwoord..."></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="q-time">Tijdslimiet (seconden)</label>
+                        <input type="number" id="q-time" value="20" min="5" max="120">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-save-question" class="btn btn-primary">Vraag Opslaan</button>
+                    <button id="btn-cancel-question" class="btn btn-secondary">Annuleren</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Editor Modal -->
+        <div id="quiz-modal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 id="quiz-modal-title">Nieuwe Quiz</h3>
+                    <button class="modal-close" id="close-quiz-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="quiz-name">Quiz Naam</label>
+                        <input type="text" id="quiz-name" placeholder="Mijn Geweldige Quiz">
+                    </div>
+                    <div class="input-group">
+                        <label for="quiz-description">Beschrijving</label>
+                        <textarea id="quiz-description" rows="2" placeholder="Waar gaat deze quiz over?"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="quiz-image">Omslagafbeelding URL (Optioneel)</label>
+                        <input type="url" id="quiz-image" placeholder="https://...">
+                    </div>
+                    
+                    <div class="quiz-questions-selector">
+                        <label>Selecteer Vragen</label>
+                        <div class="question-filters">
+                            <select id="quiz-filter-category">
+                                <option value="">Alle Categorieën</option>
+                            </select>
+                            <input type="search" id="quiz-search-questions" placeholder="Zoeken...">
+                        </div>
+                        <div id="available-questions" class="available-questions">
+                            <!-- Checkboxes for questions -->
+                        </div>
+                        <div class="selected-count">
+                            Geselecteerd: <span id="selected-question-count">0</span> vragen
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-save-quiz" class="btn btn-primary">Quiz Opslaan</button>
+                    <button id="btn-cancel-quiz" class="btn btn-secondary">Annuleren</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Modal -->
+        <div id="category-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Nieuwe Categorie</h3>
+                    <button class="modal-close" id="close-category-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="cat-name">Categorie Naam</label>
+                        <input type="text" id="cat-name" placeholder="bijv. Wetenschap">
+                    </div>
+                    <div class="input-group">
+                        <label for="cat-icon">Icoon (Emoji)</label>
+                        <input type="text" id="cat-icon" placeholder="🔬" maxlength="2">
+                    </div>
+                    <div class="input-group">
+                        <label for="cat-color">Kleur</label>
+                        <input type="color" id="cat-color" value="#6366f1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-save-category" class="btn btn-primary">Categorie Opslaan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase & Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/firebase-service.js"></script>
+    <script type="module" src="js/theme-manager.js"></script>
+    <script type="module" src="js/question-generator.js"></script>
+    <script type="module" src="js/admin-controller.js"></script>
+</body>
+</html>
